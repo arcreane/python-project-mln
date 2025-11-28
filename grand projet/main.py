@@ -8,3 +8,4 @@ window = QWidget()
 window.show()
 
 app.exec()
+print('test_luka')

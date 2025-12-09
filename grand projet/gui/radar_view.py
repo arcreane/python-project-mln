@@ -15,7 +15,7 @@ class RadarView(QGraphicsView):
 
         self.setRenderHint(QPainter.Antialiasing)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff) 
 
         self.setBackgroundBrush(QBrush(Color.RADAR_BACKGROUND))
 

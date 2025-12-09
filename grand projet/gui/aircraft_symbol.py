@@ -25,6 +25,6 @@ class AircraftSymbol(QGraphicsEllipseItem):
         else:
             self.setBrush(QBrush(Color.AIRCRAFT_NORMAL))
 
-        self.label.setPlainText(f"{self.aircraft.id}\n{self.aircraft.altitude} ft")
+        self.label.setPlainText(f"{self.aircraft.aircraft_id}\n{self.aircraft.altitude} ft")
 
 

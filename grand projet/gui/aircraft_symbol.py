@@ -1,7 +1,6 @@
-from PySide6.QtWidgets import QGraphicsScene, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsTextItem
+from PySide6.QtWidgets import QGraphicsEllipseItem, QGraphicsTextItem
 from PySide6.QtGui import QColor, QPen, QBrush
-from PySide6.QtCore import Qt
-from .color import Color
+from gui.color import Color
 
 class AircraftSymbol(QGraphicsEllipseItem):
     def __init__(self, aircraft,scale_factor = 0.01):
@@ -11,9 +10,9 @@ class AircraftSymbol(QGraphicsEllipseItem):
         self.scale_factor = scale_factor
 
         self.setBrush(QBrush(Color.AIRCRAFT_NORMAL))
-        self.setPen(QPen(Qt.black, 1))
+        self.setPen(QPen(Color.BLACK, 1))
 
-        self.label = QGraphicsTextItem(self.ac.id, self)
+        self.label = QGraphicsTextItem(self.ac.aircraft_id, self)
         self.label.setDefaultTextColor(QColor(Color.TEXT_NORMAL))
         self.label.setPos(8, -2)
 

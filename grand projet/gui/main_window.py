@@ -3,7 +3,6 @@ from PySide6.QtCore import QTimer
 
 from core.aircraft_manager import AircraftManager
 
-from core import aircraft
 from gui.radar_view import RadarView
 
 class MainWindow(QMainWindow):

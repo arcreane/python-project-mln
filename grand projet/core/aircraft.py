@@ -24,8 +24,8 @@ class Aircraft:
             self.x = Map_size
             self.y = r.randint(0, Map_size)
 
-        angle_rad = m.atan(center-self.y, center-self.x)
-        angle_deg = angle_rad*m.pi/180
+        angle_rad = m.atan2(center-self.y, center-self.x)
+        angle_deg = m.degrees(angle_rad)
         self.heading = (angle_deg + 90) % 360
 
         self.altitude = r.randint(15000, 35000)
@@ -33,9 +33,11 @@ class Aircraft:
         self.fuel = r.randint(200, 400)
         self.status = 'en approche'
 
-        self.target_altitute = self.altitude
+        self.target_altitude = self.altitude
         self.target_speed = self.speed
         self.target_heading = self.heading
+
+        self.in_collision = False
 
     def get_data(self):
         return {
@@ -47,14 +49,14 @@ class Aircraft:
             'Vitesse (kts)': self.speed,
             'Carburant (min)' : self.fuel,
             'Status': self.status,
-            'Target altitude (ft)': self.target_altitute,
+            'Target altitude (ft)': self.target_altitude,
             'Target speed (kts)': self.target_speed,
             'Target heading (deg)': self.target_heading,
             }
 
     def set_instructions(self, alt=None, speed=None, heading=None):
         if alt is not None:
-            self.target_altitute = max(0, int(alt))
+            self.target_altitude = max(0, int(alt))
         if speed is not None:
             self.target_speed = max(0, int(speed))
         if heading is not None:
@@ -65,10 +67,10 @@ class Aircraft:
         Rate_speed = 5*dt
         Rate_heading = 5*dt
 
-        if self.altitude < self.target_altitute:
-            self.altitude = min(self.altitude + Rate_altitude, self.target_altitute)
-        elif self.altitude > self.target_altitute:
-            self.altitude = max(self.altitude - Rate_altitude, self.target_altitute)
+        if self.altitude < self.target_altitude:
+            self.altitude = min(self.altitude + Rate_altitude, self.target_altitude)
+        elif self.altitude > self.target_altitude:
+            self.altitude = max(self.altitude - Rate_altitude, self.target_altitude)
 
         if self.speed < self.target_speed:
             self.speed = min(self.speed + Rate_speed, self.target_speed)
@@ -98,3 +100,6 @@ class Aircraft:
         self.fuel -= dt/60.0
         if self.fuel < 0 :
             self.fuel = 0
+
+    def is_in_collision(self):
+        return self.in_collision

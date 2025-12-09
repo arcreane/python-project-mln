@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, QStatusBar,
                                QLineEdit, QApplication, QMessageBox, QFrame, QGridLayout, QFormLayout)
 from PySide6.QtCore import Qt, QTimer
+from core.aircraft import Aircraft
 from core.aircraft_manager import AircraftManager
 from gui.radar_view import RadarScene, RadarView
 
@@ -65,10 +66,10 @@ class MainWindow(QMainWindow):
         self.input_cap = QLineEdit()
         form_layout.addWidget(self.input_cap, 2, 1)
 
-        slef.btn_apply = QPushButton("Envoyer Instructions")
+        self.btn_apply = QPushButton("Envoyer Instructions")
         self.btn_apply.clicked.connect(self.send_instruction)
-        slef.btn_apply.setEnable(False)
-        form_layout.addWidget(slef.btn_apply, 3, 0, 1, 2)
+        self.btn_apply.setEnable(False)
+        form_layout.addWidget(self.btn_apply, 3, 0, 1, 2)
 
         layout.addWidget(form_group)
         layout.addStretch()
@@ -78,7 +79,7 @@ class MainWindow(QMainWindow):
 
     def on_aircraft_selected(self):
         items = self.radar_scene.selectedItems()
-        slef.current_aircraft_symbol = None
+        self.current_aircraft_symbol = None
 
         if not items :
             self.btn_apply.setEnabled(False)
@@ -104,7 +105,7 @@ class MainWindow(QMainWindow):
         if not self.current_aircraft_symbol:
             return
         data = ("red" if data["Collision"] else ("blue" if data["Status"] == "Atteri" else "green"))
-        h text = (
+        text = (
             f"Avion : {data['ID']}\n"
             f"Statut : {status}\n"
             f"Altitude : {data['Altitude (ft)']} → {data['Target Alt (ft)']}\n"
@@ -112,7 +113,16 @@ class MainWindow(QMainWindow):
             f"Cap : {data['Cap (deg)']}° → {data['Target Cap (deg)']}°\n"
             f"Carburant : {data['Carburant (min)']:.1f} min"
         )
-         self.info_label.setText(text)
+        self.info_label.setText(text)
+
+    def send_instruction(self):
+        if not self.current_aircraft_symbol:
+            return
+
+
+
+
+
 
 
 

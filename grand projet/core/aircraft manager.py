@@ -1,10 +1,9 @@
 import random
-from math import sqrt
 from core.aircraft import Aircraft
 
 class AircraftManager:
 
-    COLLISION_HORITZ_DIST = 4000
+    COLLISION_HORIZ_DIST = 4000
     COLLISION_VERT_DIST = 1000
     SPAWN_PROBABILITY = 0.01
 
@@ -14,7 +13,7 @@ class AircraftManager:
     def add_aircraft(self, aircraft: Aircraft):
         self.aircraft_list.append(aircraft)
 
-    def remove_aircraft(selfself, aircraft: Aircraft):
+    def remove_aircraft(self, aircraft: Aircraft):
         if aircraft in self.aircraft_list:
             self.aircraft_list.remove(aircraft)
 
@@ -23,21 +22,23 @@ class AircraftManager:
         code = random.choice(airlines) + str(random.randint(100, 999))
         new_ac = Aircraft(code)
         self.aircraft_list.append(new_ac)
+        return new_ac
+
 
     def detect_collision(self):
         for ac in self.aircraft_list:
-            ac.in-collision = False
+            ac.in_collision = False
         n = len(self.aircraft_list)
-        horiz_sq = self.COLLISION_HORIZ_DIST ** 2
+        horiz_sq = self.COLLISION_HORITZ_DIST ** 2
 
         for i in range(n):
             a1 = self.aircraft_list[i]
-            if a1.status == "Atteri":
+            if a1.status == "Atterri":
                 continue
 
             for j in range(i+1, n):
                 a2 = self.aircraft_list[j]
-                if a2.status == "Atteri":
+                if a2.status == "Atterri":
                     continue
 
                 dx = a1.x - a2.x
@@ -52,7 +53,7 @@ class AircraftManager:
 
     def update_movement(self, dt: float):
         for ac in self.aircraft_list:
-            ac.movement(dt)
+            ac.mouvements(dt)
 
     def update(self, dt = 0.1):
         self.detect_collision()

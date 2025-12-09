@@ -5,7 +5,7 @@ class AircraftManager:
 
     COLLISION_HORIZ_DIST = 4000
     COLLISION_VERT_DIST = 1000
-    SPAWN_PROBABILITY = 0.01
+    SPAWN_PROBABILITY = 0.010
 
     def __init__(self):
         self.aircraft_list = []

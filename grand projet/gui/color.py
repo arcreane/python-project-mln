@@ -9,6 +9,7 @@ class Color:
     AIRCRAFT_NORMAL = QColor(0, 255, 255)
     AIRCRAFT_SELECTED = QColor(255, 255, 0)
     AIRCRAFT_COLLISION = QColor(255, 0, 0)
+    BLACK = QColor(0, 0, 0)
 
     AIRCRAFT_HEADING = QColor(255, 255, 0)
 

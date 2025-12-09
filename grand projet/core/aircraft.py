@@ -4,8 +4,8 @@ import math as m
 
 
 class Aircraft:
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, aircraft_id):
+        self.aircraft_id = aircraft_id
         Map_size = 15000
         center = Map_size/2
 
@@ -41,7 +41,7 @@ class Aircraft:
 
     def get_data(self):
         return {
-            'id': self.id,
+            'id': self.aircraft_id,
             'x': self.x,
             'y': self.y,
             'Cap (deg)': self.heading,

@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import QGraphicsScene
 from PySide6.QtGui import QColor, QPen
 from PySide6.QtCore import Qt
+import random
 
-from core.aircraft import Aircraft
-from .aircraft_symbol import AircraftSymbol
+
+from gui.aircraft_symbol import AircraftSymbol
 
 
 class  RadarScene(QGraphicsScene):
@@ -24,18 +25,44 @@ class  RadarScene(QGraphicsScene):
 
     def _draw_grid(self):
         pen_grid = QPen(QColor(80, 80, 80))
-        pen_grid.setStyle(Qt.DashLine)
+        pen_grid.setStyle(Qt.PenStyle.DashLine)
 
         for nm in [5, 10, 20, 40, 60, 80]:
             r = nm * 6076 * self.scale_factor
-            self.addLine(-1000, 0, 1000, 0, pen_grid)
-            self.addLine(0, -1000, 0, 1000, pen_grid)
+            self.addEllipse(-r, -r, 2*r, 2*r, pen_grid)
+        size = self.map_size * self.scale_factor/2
+        self.addLine(-size, 0, size, 0, pen_grid)
+        self.addLine(0, -size, 0, size, pen_grid)
 
     def update_scene(self):
+        rect = self.sceneRect()
         for ac in self.aircraft_manager.get_all_aircrafts():
-            if ac.id not in self.aircraft_symbols:
-                self.aircraft_symbols[ac.id] = AircraftSymbol(ac, self.scale_factor)
-                self.addItem(self.aircraft_symbols[ac.id])
+            if ac.aircraft_id not in self.aircraft_symbols:
+                symbol = AircraftSymbol(ac, self.scale_factor)
+                side = random.choice(['top', 'bottom', 'left', 'right'])
 
-            self.aircraft_symbols[ac.id].update_symbol()
+                x = 0
+                y = 0
+
+                match side:
+                    case 'top':
+                        x = random.uniform(rect.left(), rect.right())
+                        y = rect.top()
+                    case 'bottom':
+                        x = random.uniform(rect.left(), rect.right())
+                        y = rect.bottom()
+                    case 'left':
+                        x = rect.left()
+                        y = random.uniform(rect.top(), rect.bottom())
+                    case 'right':
+                        x = rect.right()
+                        y = random.uniform(rect.top(), rect.bottom())
+
+                symbol.setPos(x, y)
+                self.aircraft_symbols[ac.aircraft_id] = symbol
+                self.addItem(symbol)
+            else:
+                self.aircraft_symbols[ac.aircraft_id].update_symbol()
+
+
 

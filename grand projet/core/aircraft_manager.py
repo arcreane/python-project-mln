@@ -3,7 +3,7 @@ from .aircraft import Aircraft
 
 class AircraftManager:
 
-    COLLISION_HORIZ_DIST = 4000
+    COLLISION_HORITZ_DIST = 4000
     COLLISION_VERT_DIST = 1000
     SPAWN_PROBABILITY = 0.010
 

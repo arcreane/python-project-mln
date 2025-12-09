@@ -37,5 +37,5 @@ class  RadarScene(QGraphicsScene):
                 self.aircraft_symbols[ac.id] = AircraftSymbol(ac, self.scale_factor)
                 self.addItem(self.aircraft_symbols[ac.id])
 
-            self.aircraft_symbols[ac.id].uptade_symbol()
+            self.aircraft_symbols[ac.id].update_symbol()
 

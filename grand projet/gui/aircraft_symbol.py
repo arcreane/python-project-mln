@@ -14,7 +14,7 @@ class AircraftSymbol(QGraphicsEllipseItem):
         self.setPen(QPen(Qt.black, 1))
 
         self.label = QGraphicsTextItem(self.ac.id, self)
-        self.label.setBrush(QBrush(Color.TEXT_NORMAL))
+        self.label.setDefaultTextColor(QColor(Color.TEXT_NORMAL))
         self.label.setPos(8, -2)
 
         self.update_symbol()
@@ -27,6 +27,6 @@ class AircraftSymbol(QGraphicsEllipseItem):
             else:
                 self.setBrush(QBrush(Color.AIRCRAFT_NORMAL))
 
-            self.label.setText(f"{self.ac.id}\n{self.ac.altitude} ft")
+            self.label.setPlainText(f"{self.ac.id}\n{self.ac.altitude} ft")
 
 

@@ -5,12 +5,13 @@ from PySide6.QtGui import QBrush, QPainter
 from core import aircraft
 from core.aircraft_manager import AircraftManager
 from .color import Color
+from .radar_scene import RadarScene
+
 
 class RadarView(QGraphicsView):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.aircraft_manager = AircraftManager()
-
+    def __init__(self, aircraft_manager = None, parent=None):
+        self.aircraft_manager = aircraft_manager
+        self.scene_obj = RadarScene(self.aircraft_manager)
         super().__init__(self.scene_obj, parent)
 
         self.setRenderHint(QPainter.Antialiasing)

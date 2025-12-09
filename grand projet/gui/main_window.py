@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
         for _ in range(6):
             self.manager.generate_random_aircraft()
 
+
         central = QWidget()
         self.setCentralWidget(central)
 
@@ -25,6 +26,7 @@ class MainWindow(QMainWindow):
 
         self.radar = RadarView(aircraft_manager = self.manager)
         layout.addWidget(self.radar)
+        self.setCentralWidget(self.radar)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_simulation)

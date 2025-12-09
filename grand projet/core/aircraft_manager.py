@@ -1,5 +1,5 @@
 import random
-from core.aircraft import Aircraft
+from .aircraft import Aircraft
 
 class AircraftManager:
 

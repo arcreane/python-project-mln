@@ -1,25 +1,14 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QLabel
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtWidgets import QApplication
+from gui.main_window import MainWindow
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Simulation Tour de controle")
-        self.setFixedSize(1280, 720)
+def main():
+    app = QApplication(sys.argv)
 
-        self.button1 = QPushButton("button 1")
-        self.button1.clicked.connect(self.boutton_clique)
+    window = MainWindow()
+    window.show()
 
-        self.setCentralWidget(self.button1)
+    sys.exit(app.exec_())
 
-    def boutton_clique(self):
-        print("clique")
-
-
-app = QApplication(sys.argv)
-
-window = MainWindow()
-window.show()
-
-app.exec()
+if __name__ == '__main__':
+    main()

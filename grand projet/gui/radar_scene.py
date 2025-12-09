@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QGraphicsScene, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsSimpleTextItem
-from PySide6.QtGui import QColor, QPen, QBrush
+from PySide6.QtWidgets import QGraphicsScene
+from PySide6.QtGui import QColor, QPen
 from PySide6.QtCore import Qt
 
 from core.aircraft import Aircraft

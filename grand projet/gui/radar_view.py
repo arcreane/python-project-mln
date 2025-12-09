@@ -4,13 +4,12 @@ from PySide6.QtGui import QBrush, QPainter
 
 from core import aircraft
 from core.aircraft_manager import AircraftManager
-from .radar_scene import RadarScene
 from .color import Color
 
 class RadarView(QGraphicsView):
     def __init__(self, parent=None):
-        self.scene_obj = RadarScene()
-        self.aircraft_manager = aircraft.AircraftManager()
+        super().__init__(parent)
+        self.aircraft_manager = AircraftManager()
 
         super().__init__(self.scene_obj, parent)
 

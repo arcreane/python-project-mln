@@ -103,3 +103,4 @@ class Aircraft:
 
     def is_in_collision(self):
         return self.in_collision
+

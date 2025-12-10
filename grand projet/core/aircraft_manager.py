@@ -13,7 +13,7 @@ class AircraftManager:
             ac.simulate_movement(dt)
             ac.in_collision = False
 
-    DIST_LIMIT = 4000
+    DIST_LIMIT = 3500
     ALT_LIMIT = 1000
     n = len(self.aircraft_list)
     for i in range(n):

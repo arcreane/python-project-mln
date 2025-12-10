@@ -6,26 +6,25 @@ class AircraftSymbol(QGraphicsEllipseItem):
     def __init__(self, aircraft,scale_factor = 0.01):
         radius = 6
         super().__init__(-radius, -radius, radius*2, radius*2)
-        self.ac = aircraft
+        self.aircraft = aircraft
         self.scale_factor = scale_factor
 
         self.setBrush(QBrush(Color.AIRCRAFT_NORMAL))
-        self.setPen(QPen(Color.BLACK, 1))
+        self.setPen(QPen(Color.TEXT_NORMAL, 1))
 
-        self.label = QGraphicsTextItem(self.ac.aircraft_id, self)
-        self.label.setDefaultTextColor(QColor(Color.TEXT_NORMAL))
+        self.label = QGraphicsTextItem(self.aircraft.aircraft_id, self)
+        self.label.setDefaultTextColor(Color.TEXT_NORMAL)
         self.label.setPos(8, -2)
 
         self.update_symbol()
 
     def update_symbol(self):
-        self.setPos(self.ac.x * self.scale_factor, -self.ac.y * self.scale_factor)
-        if self.ac.in_collision:
-            if hasattr(self.ac, 'in_collision'):
-                self.setBrush(QBrush(Color.AIRCRAFT_COLLISION))
-            else:
-                self.setBrush(QBrush(Color.AIRCRAFT_NORMAL))
+        self.setPos(self.aircraft.x * self.scale_factor, -self.aircraft.y * self.scale_factor)
+        if self.aircraft.in_collision:
+            self.setBrush(QBrush(Color.AIRCRAFT_COLLISION))
+        else:
+            self.setBrush(QBrush(Color.AIRCRAFT_NORMAL))
 
-            self.label.setPlainText(f"{self.ac.id}\n{self.ac.altitude} ft")
+        self.label.setPlainText(f"{self.aircraft.aircraft_id}\n{self.aircraft.altitude} ft")
 
 

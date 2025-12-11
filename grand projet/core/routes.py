@@ -1,29 +1,25 @@
 class Waypoint:
-    """Point de passage sur une route"""
 
     def __init__(self, x, y, altitude=None):
         self.x = x
         self.y = y
-        self.altitude = altitude  # Altitude recommandée (peut être None)
+        self.altitude = altitude
 
 
 class Route:
-    """Route prédéfinie dans l'espace aérien"""
 
     def __init__(self, name, waypoints, route_type="cruise"):
         self.name = name
-        self.waypoints = waypoints  # Liste de Waypoint
-        self.route_type = route_type  # "cruise" ou "approach"
+        self.waypoints = waypoints
+        self.route_type = route_type
 
     def get_next_waypoint(self, current_index):
-        """Retourne le prochain waypoint"""
         if current_index < len(self.waypoints) - 1:
             return self.waypoints[current_index + 1], current_index + 1
         return None, current_index
 
 
 class RouteManager:
-    """Gestionnaire de toutes les routes"""
 
     def __init__(self):
         self.routes = {}
@@ -117,21 +113,17 @@ class RouteManager:
         ], "approach")
 
     def get_route(self, route_name):
-        """Récupère une route par son nom"""
         return self.routes.get(route_name)
 
     def get_random_cruise_route(self):
-        """Retourne une route cruise aléatoire"""
         import random
         cruise_routes = [r for r in self.routes.values() if r.route_type == "cruise"]
         return random.choice(cruise_routes)
 
     def get_random_approach_route(self):
-        """Retourne une approche aléatoire"""
         import random
         approach_routes = [r for r in self.routes.values() if r.route_type == "approach"]
         return random.choice(approach_routes)
 
     def get_all_approach_names(self):
-        """Retourne la liste des noms d'approches"""
         return [name for name, route in self.routes.items() if route.route_type == "approach"]

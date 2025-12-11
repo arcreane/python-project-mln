@@ -15,7 +15,7 @@ class MainWindow(QWidget):
         self.setWindowTitle("ATC Simulator - Tour de Contrôle")
         self.resize(1600, 900)
 
-        # Style sombre
+        # Style
         self.setStyleSheet("""
             QWidget {
                 background-color: #1a1a1a;
@@ -79,11 +79,10 @@ class MainWindow(QWidget):
 
         self._build_ui()
 
-        # Connexions
         self.scene.aircraft_selected.connect(self.on_aircraft_selected)
         self.list_widget.itemSelectionChanged.connect(self.on_list_selected)
 
-        # Timer simulation
+        # Timer
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_simulation)
         self.timer.start(50)  # 50ms = 20 FPS
@@ -224,7 +223,6 @@ class MainWindow(QWidget):
 
     def on_aircraft_selected(self, symbol):
         """Quand un avion est sélectionné sur le radar"""
-        # Si on change d'avion, vider les champs de contrôle
         if self.selected_aircraft != symbol.aircraft:
             self.alt_input.clear()
             self.speed_input.clear()
@@ -244,7 +242,6 @@ class MainWindow(QWidget):
         symbol = self.scene.aircraft_symbols.get(ac_id)
 
         if symbol:
-            # Si on change d'avion, vider les champs de contrôle
             if self.selected_aircraft != symbol.aircraft:
                 self.alt_input.clear()
                 self.speed_input.clear()
@@ -263,7 +260,6 @@ class MainWindow(QWidget):
         ac = self.selected_aircraft
         data = ac.get_data()
 
-        # Afficher UNIQUEMENT les infos (lecture seule)
         info_text = f"""ID: {data['ID']}
 Route: {data['Route']}
 Statut: {data['Statut']}
@@ -289,7 +285,6 @@ ALERTES:
         """
 
         self.info_label.setText(info_text)
-        # Ne PLUS remplir automatiquement les champs de contrôle
 
     def select_in_list(self, ac_id):
         """Sélectionne un avion dans la liste"""
@@ -304,12 +299,10 @@ ALERTES:
             return
 
         try:
-            # Lire les valeurs saisies
             alt_text = self.alt_input.text().strip()
             speed_text = self.speed_input.text().strip()
             heading_text = self.heading_input.text().strip()
 
-            # Appliquer seulement les valeurs non-vides
             if alt_text:
                 alt = int(alt_text)
                 self.selected_aircraft.set_instruction(alt=alt)
@@ -322,17 +315,14 @@ ALERTES:
                 heading = float(heading_text)
                 self.selected_aircraft.set_instruction(heading=heading)
 
-            # Vider les champs après application
             self.alt_input.clear()
             self.speed_input.clear()
             self.heading_input.clear()
 
-            # Feedback visuel temporaire
             self.btn_apply.setText("✓ APPLIQUÉ")
             QTimer.singleShot(1000, lambda: self.btn_apply.setText("📡 APPLIQUER"))
 
         except ValueError:
-            # Feedback d'erreur
             self.btn_apply.setText("❌ ERREUR")
             QTimer.singleShot(1000, lambda: self.btn_apply.setText("📡 APPLIQUER"))
 
@@ -364,16 +354,16 @@ ALERTES:
 
     def update_simulation(self):
         """Mise à jour de la simulation"""
-        # Update des avions
+        # MAJ avions
         new_ac = self.aircraft_manager.update(0.1)
 
         if new_ac:
             self.scene.add_aircraft_to_scene(new_ac)
 
-        # Mise à jour positions
+        # MAJ pos
         self.scene.update_positions()
 
-        # Mise à jour liste
+        # MAJ liste
         self.list_widget.clear()
         for ac in self.aircraft_manager.get_all_aircrafts():
             status = ""
@@ -386,7 +376,7 @@ ALERTES:
 
             self.list_widget.addItem(f"{ac.identifier} - {status} {ac.status}")
 
-        # Mise à jour statistiques
+        # MAJ
         stats = self.aircraft_manager.get_statistics()
         stats_text = f"""
 Total générés: {stats['total_spawned']}
@@ -396,7 +386,6 @@ Collisions: {stats['collisions']}
         """
         self.stats_label.setText(stats_text)
 
-        # Alertes collision ET avertissements préventifs
         alert_msg = ""
 
         # Collisions imminentes (ROUGE)
@@ -417,7 +406,6 @@ Collisions: {stats['collisions']}
                 alert_msg += f"   Distance: {dist} km\n"
                 alert_msg += f"   Séparation alt: {alt_diff} ft\n\n"
 
-        # Si tout va bien
         if not alert_msg:
             alert_msg = "✓ Aucune alerte\n✓ Séparation sécurisée"
 

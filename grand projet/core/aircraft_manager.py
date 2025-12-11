@@ -3,6 +3,7 @@ import math
 from core.aircraft import Aircraft
 from core.routes import RouteManager
 
+
 class AircraftManager:
     def __init__(self):
         self.aircraft_list = []
@@ -18,15 +19,21 @@ class AircraftManager:
         self.total_collisions = 0
 
     def get_all_aircrafts(self):
-        return [ac for ac in self.aircraft_list if not ac.has_landed and not getattr(ac, 'is_destroyed', False)]
+        return [ac for ac in self.aircraft_list
+                if not ac.has_landed and not getattr(ac, 'is_destroyed', False)]
 
+    def _spawn_initial_aircraft(self):
+        num_initial = random.randint(5, 8)
+        for _ in range(num_initial):
+            self.spawn_aircraft()
 
     def spawn_aircraft(self):
+        """Génère un nouvel avion"""
         self.spawn_counter += 1
         self.total_spawned += 1
 
         if random.random() < 0.7:
-            rout = self.route_manager.get_random_cruise_route()
+            route = self.route_manager.get_random_cruise_route()
             prefix = "CRZ"
         else:
             route = self.route_manager.get_random_approach_route()
@@ -35,23 +42,26 @@ class AircraftManager:
         identifier = f"{prefix}{random.randint(100, 999)}"
         aircraft = Aircraft(identifier, route, self.route_manager)
         self.aircraft_list.append(aircraft)
+
         return aircraft
 
     def update(self, dt):
+        """Mise à jour de tous les avions"""
         for ac in self.aircraft_list:
-            if not getattr(ac, 'has_destroyed', False):
+            if not getattr(ac, 'is_destroyed', False):
                 ac.simulate_movement(dt)
-            ac.in_collision =False
+            ac.in_collision = False
             ac.in_warning = False
+
 
         self.collision_detected = False
         self.collision_pairs = []
         self.warning_pairs = []
 
         DIST_COLLISION = 4000
-        DIST_WARNING = 15000
+        DIST_WARNING = 8000
         ALT_COLLISION = 1000
-        ALT_WARNING = 4000
+        ALT_WARNING = 2000
 
         active_aircraft = self.get_all_aircrafts()
         n = len(active_aircraft)
@@ -79,18 +89,23 @@ class AircraftManager:
 
                     if ac1.collision_timer > 2.0:
                         ac1.is_destroyed = True
-                        ac1.status = "DETRUIT"
+                        ac1.status = "💥 DÉTRUIT"
                     if ac2.collision_timer > 2.0:
                         ac2.is_destroyed = True
-                        ac2.status = "DETRUIT"
+                        ac2.status = "💥 DÉTRUIT"
 
-                        pair_key = tuple(sorted([ac1.identifier, ac2.identifier]))
-                        self.collision_pairs.append((ac1.identifier, ac2.identifier))
+                    pair_key = tuple(sorted([ac1.identifier, ac2.identifier]))
+                    self.collision_pairs.append((ac1.identifier, ac2.identifier))
 
-                    elif dist < DIST_WARNING and d_alt < ALT_WARNING:
-                        ac1.in_warning = True  # Active le flag pour couleur orange
-                        ac2.in_warning = True
-                        self.warning_pairs.append((ac1.identifier, ac2.identifier,round(dist / 1000, 1), round(d_alt)))
+                    if pair_key not in self.collision_history:
+                        self.collision_history.add(pair_key)
+                        self.total_collisions += 1
+
+                elif dist < DIST_WARNING and d_alt < ALT_WARNING:
+                    ac1.in_warning = True
+                    ac2.in_warning = True
+                    self.warning_pairs.append((ac1.identifier, ac2.identifier,
+                                               round(dist / 1000, 1), round(d_alt)))
 
         for ac in active_aircraft:
             if not ac.has_emergency and random.random() < 0.0001:
@@ -101,16 +116,19 @@ class AircraftManager:
             new_aircraft = self.spawn_aircraft()
 
         for ac in self.aircraft_list:
-            if ac.has_landed and ac.status == "Landed":
+            if ac.has_landed and ac.status == "Atterri":
                 self.total_landed += 1
                 ac.status = "Landed (counted)"
 
         return new_aircraft
 
     def force_landing(self, aircraft_id):
+        aircraft = self.get_aircraft_by_id(aircraft_id)
         if aircraft:
-            approaches = [r for r in self.route_manager.routes.values() if r.route_type == "approach"]
-            min_dist = float("inf")
+            approaches = [r for r in self.route_manager.routes.values()
+                          if r.route_type == "approach"]
+
+            min_dist = float('inf')
             best_approach = None
 
             for approach in approaches:
@@ -126,33 +144,20 @@ class AircraftManager:
                 aircraft.current_waypoint_index = 0
                 aircraft.manual_control = False
                 aircraft.is_holding = False
-                aircraft.status = "Forced landing"
+                aircraft.status = "Atterrissage forcé"
                 return True
-            return False
+        return False
 
     def get_aircraft_by_id(self, aircraft_id):
         for ac in self.aircraft_list:
             if ac.identifier == aircraft_id:
                 return ac
-            return None
+        return None
 
-    def get_qtatistics(self):
+    def get_statistics(self):
         return {
             "total_spawned": self.total_spawned,
             "active": len(self.get_all_aircrafts()),
             "landed": self.total_landed,
             "collisions": self.total_collisions
         }
-
-
-
-
-
-
-
-
-
-
-
-
-

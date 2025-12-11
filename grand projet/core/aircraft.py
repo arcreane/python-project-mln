@@ -1,21 +1,21 @@
 import math
 import random
 
+
 class Aircraft:
     def __init__(self, identifier, route, route_manager):
         self.identifier = identifier
         self.route = route
         self.route_manager = route_manager
-
         self.current_waypoint_index = 0
 
-        #position initial
+
         first_wp = route.waypoints[0]
         self.x = first_wp.x
         self.y = first_wp.y
-        self.altitude = first_wp.altitude if first_wp.altitude else 300000
+        self.altitude = first_wp.altitude if first_wp.altitude else 30000
 
-        #cap vers le prochain waypoint
+
         if len(route.waypoints) > 1:
             next_wp = route.waypoints[1]
             dx = next_wp.x - self.x
@@ -24,26 +24,37 @@ class Aircraft:
         else:
             self.heading = 0
 
-        self.speed = random.randint(350, 500)
-        self.fuel = random.randint(30, 60) # minutes
-        self.status = "Cruise" if route.route_type == "cruise" esle "Approach"
+        self.speed = random.randint(350, 480)
+        self.fuel = random.randint(30, 60)  # minutes
+        self.status = "Cruise" if route.route_type == "cruise" else "Approche"
+
 
         self.target_altitude = self.altitude
         self.target_speed = self.speed
         self.target_heading = self.heading
 
 
-        #Etat
-        slef.in_collision = False
+        self.in_collision = False
         self.in_warning = False
         self.has_emergency = False
+        self.emergency_type = None
+        self.is_holding = False
         self.holding_center = None
         self.holding_radius = 5000
         self.manual_control = False
-        self.has_lended = False
+        self.has_landed = False
         self.is_destroyed = False
 
-    def set_holding_pattern(self, enable = True):
+    def set_instruction(self, alt=None, speed=None, heading=None):
+        self.manual_control = True
+        if alt is not None:
+            self.target_altitude = max(0, int(alt))
+        if speed is not None:
+            self.target_speed = max(100, min(500, int(speed)))
+        if heading is not None:
+            self.target_heading = float(heading) % 360
+
+    def set_holding_pattern(self, enable=True):
         self.is_holding = enable
         if enable and not self.holding_center:
             self.holding_center = (self.x, self.y)
@@ -55,7 +66,7 @@ class Aircraft:
             self.current_waypoint_index = 0
             self.manual_control = False
             self.is_holding = False
-            slef.status = "Changed Approach"
+            self.status = "Approche changée"
             return True
         return False
 
@@ -70,20 +81,23 @@ class Aircraft:
                 self.status = "URGENCE CARBURANT"
                 self.fuel = random.randint(2, 8)
 
-    def simulate_movement(self, dt = 1):
-        if self.has_lended:
+    def simulate_movement(self, dt=1):
+        if self.has_landed:
             return
 
-        #taux de changement
+
         RATE_ALT = 800 * dt
         RATE_SPEED = 8 * dt
         RATE_HEADING = 3 * dt
 
+
         if not self.manual_control and not self.is_holding:
-            self.auto_navigate()
+            self._auto_navigate()
+
 
         if self.is_holding and self.holding_center:
-            self.holding_pattern()
+            self._holding_pattern()
+
 
         if abs(self.altitude - self.target_altitude) > RATE_ALT:
             if self.altitude < self.target_altitude:
@@ -108,39 +122,42 @@ class Aircraft:
             diff -= 360
         elif diff < -180:
             diff += 360
-            if abs(diff) > RATE_HEADING:
-                self.heading += RATE_HEADING if diff > 0 else -RATE_HEADING
-            else:
-                self.heading = self.target_heading
-            self.heading %= 360
-
+        if abs(diff) > RATE_HEADING:
+            self.heading += RATE_HEADING if diff > 0 else -RATE_HEADING
+        else:
+            self.heading = self.target_heading
+        self.heading %= 360
 
 
         rad = math.radians(self.heading)
         scale = 2.0
         dx = self.speed * scale * dt * math.sin(rad)
-        dy = self.speed * scale * dt * math.cos(rad)
+        dy = self.speed * scale * dt * -math.cos(rad)
         self.x += dx
         self.y += dy
 
-        fuel.rate = 0.02 if not self.manual_emergency else 0.04
+
+        fuel_rate = 0.02 if not self.has_emergency else 0.04
         self.fuel -= fuel_rate * dt
         if self.fuel < 0:
             self.fuel = 0
 
+
         if self.altitude < 100 and math.sqrt(self.x ** 2 + self.y ** 2) < 2000:
             self.has_landed = True
-            self.status = "Landed"
+            self.status = "Atterri"
             self.speed = 0
 
     def _auto_navigate(self):
+
         if self.current_waypoint_index >= len(self.route.waypoints):
             return
 
         target_wp = self.route.waypoints[self.current_waypoint_index]
         dx = target_wp.x - self.x
         dy = target_wp.y - self.y
-        distance = math.sqrt(dx**2 + dy**2)
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+
 
         if distance < 5000:
             next_wp, next_idx = self.route.get_next_waypoint(self.current_waypoint_index)
@@ -150,33 +167,38 @@ class Aircraft:
                 dx = target_wp.x - self.x
                 dy = target_wp.y - self.y
 
+
         self.target_heading = math.degrees(math.atan2(dx, -dy)) % 360
+
 
         if target_wp.altitude is not None:
             self.target_altitude = target_wp.altitude
 
-        if self.route_type == "approach":
+
+        if self.route.route_type == "approach":
             if self.altitude > 20000:
-                self.target_speed = 380  # Haute altitude : vitesse normale
+                self.target_speed = 380
             elif self.altitude > 15000:
-                self.target_speed = 320  # Descente initiale
+                self.target_speed = 320
             elif self.altitude > 10000:
-                self.target_speed = 280  # Approche intermédiaire
+                self.target_speed = 280
             elif self.altitude > 5000:
-                self.target_speed = 220  # Approche finale
+                self.target_speed = 220
             elif self.altitude > 2000:
-                self.target_speed = 180  # Finale courte
+                self.target_speed = 180
             else:
                 self.target_speed = 150
 
     def _holding_pattern(self):
+        """Circuit d'attente circulaire"""
         if not self.holding_center:
             return
+
         cx, cy = self.holding_center
         dx = self.x - cx
         dy = self.y - cy
 
-        angle_to_center = math.atan2(dx, dy)
+        angle_to_center = math.atan2(dy, dx)
         tangent_angle = angle_to_center + math.pi / 2
         self.target_heading = math.degrees(-tangent_angle + math.pi / 2) % 360
 
@@ -198,5 +220,3 @@ class Aircraft:
             "Collision": self.in_collision,
             "Landed": self.has_landed
         }
-
-
